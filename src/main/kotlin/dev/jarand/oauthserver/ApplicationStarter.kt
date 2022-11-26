@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class OauthServerApplication
+class ApplicationStarter
 
 fun main(args: Array<String>) {
-	runApplication<OauthServerApplication>(*args)
+    runApplication<ApplicationStarter>(*args)
 }

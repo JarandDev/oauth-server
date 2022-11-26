@@ -4,3 +4,7 @@
 
 # Maven build output
 target/
+
+# Git
+.git/
+.gitignore/
