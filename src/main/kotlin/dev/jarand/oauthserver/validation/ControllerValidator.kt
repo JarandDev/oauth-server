@@ -1,12 +1,12 @@
-package dev.jarand.oauthserver.account.validation
+package dev.jarand.oauthserver.validation
 
 import dev.jarand.oauthserver.account.controller.resource.CreateAccountResource
 import dev.jarand.oauthserver.account.controller.resource.PasswordReset
-import dev.jarand.oauthserver.account.validation.domain.ValidationError
+import dev.jarand.oauthserver.validation.domain.ValidationError
 import org.springframework.stereotype.Component
 
 @Component
-class AccountValidator {
+class ControllerValidator {
 
     fun validate(resource: CreateAccountResource): List<ValidationError> {
         if (resource.password != resource.confirmedPassword) {

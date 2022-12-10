@@ -17,4 +17,8 @@ class TimeService(private val instantSupplier: () -> Instant) {
     fun passwordResetCreated(): Instant {
         return instantSupplier.invoke()
     }
+
+    fun applicationCreated(): Instant {
+        return instantSupplier.invoke()
+    }
 }

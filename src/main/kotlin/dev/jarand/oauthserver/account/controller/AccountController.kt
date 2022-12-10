@@ -6,10 +6,10 @@ import dev.jarand.oauthserver.account.authentication.resource.AuthenticationErro
 import dev.jarand.oauthserver.account.controller.resource.*
 import dev.jarand.oauthserver.account.domain.AccountAssembler
 import dev.jarand.oauthserver.account.domain.PasswordResetRequestAssembler
-import dev.jarand.oauthserver.account.validation.AccountValidator
-import dev.jarand.oauthserver.account.validation.domain.ValidationError
-import dev.jarand.oauthserver.account.validation.resource.ValidationErrorResourceAssembler
 import dev.jarand.oauthserver.hash.HashService
+import dev.jarand.oauthserver.validation.ControllerValidator
+import dev.jarand.oauthserver.validation.domain.ValidationError
+import dev.jarand.oauthserver.validation.resource.ValidationErrorResourceAssembler
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,7 +21,7 @@ import java.util.*
 class AccountController(
     private val accountService: AccountService,
     private val accountAuthenticator: AccountAuthenticator,
-    private val accountValidator: AccountValidator,
+    private val controllerValidator: ControllerValidator,
     private val accountAssembler: AccountAssembler,
     private val accountResourceAssembler: AccountResourceAssembler,
     private val passwordResetRequestAssembler: PasswordResetRequestAssembler,
@@ -34,7 +34,7 @@ class AccountController(
 
     @PostMapping
     fun createAccount(@Valid @RequestBody resource: CreateAccountResource): ResponseEntity<Any> {
-        val errors = accountValidator.validate(resource)
+        val errors = controllerValidator.validate(resource)
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(validationErrorResourceAssembler.assemble(errors))
         }
@@ -45,7 +45,7 @@ class AccountController(
 
     @GetMapping("{id}")
     fun getAccount(@PathVariable id: String): ResponseEntity<Any> {
-        val errors = accountValidator.validate(id)
+        val errors = controllerValidator.validate(id)
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(validationErrorResourceAssembler.assemble(errors))
         }
@@ -80,7 +80,7 @@ class AccountController(
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationErrorResourceAssembler.assemble(tokenResult))
         }
         val account = accountService.get(passwordReset.email) ?: return ResponseEntity.badRequest().body(validationErrorResourceAssembler.assemble(listOf(ValidationError("email", "No account found"))))
-        val passwordErrors = accountValidator.validate(passwordReset)
+        val passwordErrors = controllerValidator.validate(passwordReset)
         if (passwordErrors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(validationErrorResourceAssembler.assemble(passwordErrors))
         }
@@ -90,7 +90,7 @@ class AccountController(
 
     @DeleteMapping("{id}")
     fun deleteAccount(@PathVariable id: String): ResponseEntity<Any> {
-        val errors = accountValidator.validate(id)
+        val errors = controllerValidator.validate(id)
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(validationErrorResourceAssembler.assemble(errors))
         }

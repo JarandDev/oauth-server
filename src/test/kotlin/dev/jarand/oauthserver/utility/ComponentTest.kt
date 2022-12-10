@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(
     properties = [
-        "spring.datasource.url=jdbc:h2:mem:oauth-server-test-db"
+        "spring.datasource.url=jdbc:h2:mem:oauth-server-test-db",
+        "logging.level.dev.jarand.oauthserver=DEBUG"
     ]
 )
 @AutoConfigureMockMvc
