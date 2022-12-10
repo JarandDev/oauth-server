@@ -29,4 +29,8 @@ class IdService(private val uuidSupplier: () -> UUID) {
     fun clientSecret(): UUID {
         return uuidSupplier.invoke()
     }
+
+    fun tokenId(): UUID {
+        return uuidSupplier.invoke()
+    }
 }

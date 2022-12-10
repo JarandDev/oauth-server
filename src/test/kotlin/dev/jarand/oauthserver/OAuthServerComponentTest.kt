@@ -1,9 +1,13 @@
 package dev.jarand.oauthserver
 
+import com.fasterxml.jackson.module.kotlin.readValue
+import dev.jarand.oauthserver.token.resource.TokenResource
 import dev.jarand.oauthserver.utility.ComponentTest
 import dev.jarand.oauthserver.utility.fileAsString
 import io.mockk.every
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -58,9 +62,11 @@ class OAuthServerComponentTest : ComponentTest() {
         every { idService.accountId() } returns UUID.fromString("7d09e316-c59d-4fc8-a203-146cd394f7c2")
         every { idService.passwordResetId() } returns UUID.fromString("52c705fe-174b-4744-b978-2b8501ec22ca")
         every { idService.passwordResetToken() } returns UUID.fromString("1198f5c3-7cf8-4349-b771-41b9a4909c92")
+        every { idService.tokenId() } returns UUID.fromString("f0c55dfe-ac44-46b7-9579-c464a169c4b9") andThen UUID.fromString("148c207a-1b7c-4d81-9f04-3b4e06b0cba6")
         every { timeService.accountCreated() } returns Instant.parse("2022-12-10T18:56:59.560966600Z")
         every { timeService.accountUpdated() } returns Instant.parse("2022-12-10T19:57:03.560966600Z")
         every { timeService.passwordResetCreated() } returns Instant.parse("2022-12-11T20:03:07.560966600Z")
+        every { timeService.tokenIssuedAt() } returns Instant.parse("2022-11-10T18:41:59.560966600Z") andThen Instant.parse("2022-11-10T18:42:59.560966600Z")
 
         mockMvc.perform(
             post("/account").content(fileAsString("/json/account/password-reset/POST-account.json")).contentType(APPLICATION_JSON)
@@ -133,5 +139,34 @@ class OAuthServerComponentTest : ComponentTest() {
         mockMvc.perform(
             delete("/application/b28729f5-b03e-4d9b-8d28-d9156b7e8d1a")
         ).andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `Authenticating account should return expected token`() {
+        every { idService.accountId() } returns UUID.fromString("647ceb4c-00e5-4a34-aac8-aca5587ab6d3")
+        every { idService.tokenId() } returns UUID.fromString("7bcc8fb7-a196-4eb5-9207-e9e991a3d167")
+        every { timeService.accountCreated() } returns Instant.parse("2022-12-10T19:25:59.560966600Z")
+        every { timeService.tokenIssuedAt() } returns Instant.parse("2022-12-10T19:26:59.560966600Z")
+
+        mockMvc.perform(
+            post("/account").content(fileAsString("/json/account/authenticate/POST-account.json")).contentType(APPLICATION_JSON)
+        ).andExpect(status().isOk).andExpect(content().json(fileAsString("/json/account/authenticate/POST-and-GET-account-response.json"), true))
+
+        mockMvc.perform(
+            get("/account/647ceb4c-00e5-4a34-aac8-aca5587ab6d3")
+        ).andExpect(status().isOk).andExpect(content().json(fileAsString("/json/account/authenticate/POST-and-GET-account-response.json"), true))
+
+        val authenticationResponse = mockMvc.perform(
+            post("/account/authenticate").content(fileAsString("/json/account/authenticate/POST-authenticate.json")).contentType(APPLICATION_JSON)
+        ).andExpect(status().isOk).andReturn().response.contentAsString
+        assertTokenResponse(authenticationResponse)
+    }
+
+    private fun assertTokenResponse(tokenResponse: String) {
+        val resource = objectMapper.readValue<TokenResource>(tokenResponse)
+        val (header, body) = resource.accessToken.split(".")
+        JSONAssert.assertEquals(fileAsString("/json/account/authenticate/token-header.json"), String(Base64.getDecoder().decode(header)), true)
+        JSONAssert.assertEquals(fileAsString("/json/account/authenticate/token-body.json"), String(Base64.getDecoder().decode(body)), true)
+        assertThat(resource.expiresIn).isEqualTo(300)
     }
 }

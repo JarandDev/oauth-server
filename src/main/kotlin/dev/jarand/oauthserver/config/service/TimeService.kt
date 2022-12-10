@@ -21,4 +21,8 @@ class TimeService(private val instantSupplier: () -> Instant) {
     fun applicationCreated(): Instant {
         return instantSupplier.invoke()
     }
+
+    fun tokenIssuedAt(): Instant {
+        return instantSupplier.invoke()
+    }
 }
