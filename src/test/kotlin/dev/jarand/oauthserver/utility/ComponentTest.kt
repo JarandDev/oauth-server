@@ -1,5 +1,6 @@
 package dev.jarand.oauthserver.utility
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import dev.jarand.oauthserver.config.service.IdService
 import dev.jarand.oauthserver.config.service.TimeService
@@ -24,6 +25,9 @@ class ComponentTest {
 
     @Autowired
     lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @MockkBean
     lateinit var idService: IdService

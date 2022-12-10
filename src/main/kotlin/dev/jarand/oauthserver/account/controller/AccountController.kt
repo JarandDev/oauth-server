@@ -7,6 +7,8 @@ import dev.jarand.oauthserver.account.controller.resource.*
 import dev.jarand.oauthserver.account.domain.AccountAssembler
 import dev.jarand.oauthserver.account.domain.PasswordResetRequestAssembler
 import dev.jarand.oauthserver.hash.HashService
+import dev.jarand.oauthserver.token.TokenService
+import dev.jarand.oauthserver.token.resource.TokenResourceAssembler
 import dev.jarand.oauthserver.validation.ControllerValidator
 import dev.jarand.oauthserver.validation.domain.ValidationError
 import dev.jarand.oauthserver.validation.resource.ValidationErrorResourceAssembler
@@ -29,7 +31,9 @@ class AccountController(
     private val passwordResetAssembler: PasswordResetAssembler,
     private val authenticationErrorResourceAssembler: AuthenticationErrorResourceAssembler,
     private val validationErrorResourceAssembler: ValidationErrorResourceAssembler,
-    private val hashService: HashService
+    private val hashService: HashService,
+    private val tokenService: TokenService,
+    private val tokenResourceAssembler: TokenResourceAssembler
 ) {
 
     @PostMapping
@@ -55,12 +59,13 @@ class AccountController(
 
     @PostMapping("authenticate")
     fun authenticateAccount(@Valid @RequestBody resource: AuthenticateAccountResource): ResponseEntity<Any> {
-        val result = accountAuthenticator.authenticate(resource)
-        if (result.second != null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationErrorResourceAssembler.assemble(result.second!!))
+        val (account, errors) = accountAuthenticator.authenticate(resource)
+        if (errors != null && account == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationErrorResourceAssembler.assemble(errors))
         }
-        // TODO: Return access token
-        return ResponseEntity.ok().build()
+        val accountId = account?.id ?: throw IllegalStateException()
+        val token = tokenService.createTokenForAccount(accountId)
+        return ResponseEntity.ok(tokenResourceAssembler.assemble(token))
     }
 
     @PostMapping("request-password-reset")
