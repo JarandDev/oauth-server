@@ -10,7 +10,6 @@ class PasswordResetRequestResourceAssembler {
         return PasswordResetRequestResource(
             passwordResetRequest.id.toString(),
             passwordResetRequest.email,
-            passwordResetRequest.plainTextToken,
             passwordResetRequest.created.toString()
         )
     }
