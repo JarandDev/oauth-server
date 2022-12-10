@@ -17,4 +17,16 @@ class IdService(private val uuidSupplier: () -> UUID) {
     fun passwordResetToken(): UUID {
         return uuidSupplier.invoke()
     }
+
+    fun applicationId(): UUID {
+        return uuidSupplier.invoke()
+    }
+
+    fun clientId(): UUID {
+        return uuidSupplier.invoke()
+    }
+
+    fun clientSecret(): UUID {
+        return uuidSupplier.invoke()
+    }
 }

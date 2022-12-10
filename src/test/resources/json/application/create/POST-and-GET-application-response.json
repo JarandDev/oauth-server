@@ -1,0 +1,11 @@
+{
+  "id": "4217e0ab-b881-44ca-97ab-743793cc0577",
+  "name": "Test application",
+  "description": "An application for testing",
+  "homePageUrl": "https://jarand.dev",
+  "privacyPolicyUrl": "https://jarand.dev/privacy-policy",
+  "clientId": "cb6643a6-e431-4a40-8106-ac674c9b7723",
+  "ownerAccountId": "7d09e316-c59d-4fc8-a203-146cd394f7c2",
+  "created": "2022-11-10T17:40:59.560966600Z",
+  "updated": "2022-11-10T17:40:59.560966600Z"
+}

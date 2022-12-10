@@ -1,6 +1,6 @@
-package dev.jarand.oauthserver.account.validation.resource
+package dev.jarand.oauthserver.validation.resource
 
-import dev.jarand.oauthserver.account.validation.domain.ValidationError
+import dev.jarand.oauthserver.validation.domain.ValidationError
 import org.springframework.stereotype.Component
 
 @Component

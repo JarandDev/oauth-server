@@ -1,3 +1,3 @@
-package dev.jarand.oauthserver.account.validation.domain
+package dev.jarand.oauthserver.validation.domain
 
 data class ValidationError(val field: String, val error: String)

@@ -6,8 +6,9 @@ CREATE TABLE application
     home_page_url      VARCHAR NOT NULL,
     privacy_policy_url VARCHAR NOT NULL,
     client_id          UUID    NOT NULL,
-    client_secret      VARCHAR NOT NULL,
-    owner_account_id   UUID    NOT NULL REFERENCES account (id),
+    client_secret_hash VARCHAR NOT NULL,
+    client_secret_salt VARCHAR NOT NULL,
+    owner_account_id   UUID    NOT NULL,
     created            VARCHAR NOT NULL,
     updated            VARCHAR NOT NULL
 );
