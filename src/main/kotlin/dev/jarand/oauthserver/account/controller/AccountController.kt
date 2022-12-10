@@ -66,6 +66,7 @@ class AccountController(
     @PostMapping("request-password-reset")
     fun requestPasswordReset(@Valid @RequestBody resource: RequestPasswordResetResource): ResponseEntity<PasswordResetRequestResource> {
         val passwordResetRequest = passwordResetRequestAssembler.assembleNew(resource)
+        // TODO: Send email with password reset token
         accountService.save(passwordResetRequest)
         return ResponseEntity.ok(passwordResetRequestResourceAssembler.assemble(passwordResetRequest))
     }
